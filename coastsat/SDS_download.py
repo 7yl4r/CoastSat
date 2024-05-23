@@ -35,6 +35,8 @@ from coastsat import SDS_preprocess, SDS_tools, gdal_merge
 np.seterr(all='ignore') # raise/ignore divisions by 0 and nans
 gdal.PushErrorHandler('CPLQuietErrorHandler')
 
+MAX_DL_RETRIES = 10
+
 def retrieve_images(inputs):
     """
     Downloads all images from Landsat 5, Landsat 7, Landsat 8 and Sentinel-2
@@ -201,7 +203,7 @@ def retrieve_images(inputs):
                     except:
                         print('\nDownload failed, trying again...')
                         count += 1
-                        if count > 100:
+                        if count > MAX_DL_RETRIES:
                             raise Exception('Too many attempts, crashed while downloading image %s'%im_meta['id'])
                         else:
                             continue
@@ -272,7 +274,7 @@ def retrieve_images(inputs):
                     except:
                         print('\nDownload failed, trying again...')
                         count += 1
-                        if count > 100:
+                        if count > MAX_DL_RETRIES:
                             raise Exception('Too many attempts, crashed while downloading image %s'%im_meta['id'])
                         else:
                             continue
@@ -347,7 +349,7 @@ def retrieve_images(inputs):
                     except:
                         print('\nDownload failed, trying again...')
                         count += 1
-                        if count > 100:
+                        if count > MAX_DL_RETRIES:
                             raise Exception('Too many attempts, crashed while downloading image %s'%im_meta['id'])
                         else:
                             continue             
@@ -527,6 +529,7 @@ def check_images_available(inputs):
     im_dict_T1 = dict([])
     sum_img = 0
     for satname in inputs['sat_list']:
+        print(satname)
         if 'S2tile' not in inputs.keys():
             im_list = get_image_info(col_names_T1[satname],satname,polygon,dates_str)
         else :
